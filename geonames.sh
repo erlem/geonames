@@ -71,23 +71,6 @@ download_geonames_data() {
 }
 
 #######################################
-# Dropping $DB_NAME database
-# Globals:
-#   DB_HOST
-#   DB_PORT
-#   DB_USERNAME
-#   DB_PASSWORD
-# Arguments:
-#   None
-# Returns:
-#   None
-#######################################
-mysql_db_drop() {
-	echo "Dropping [$DB_NAME] database"
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
-}
-
-#######################################
 # Creating $DB_NAME database
 # Globals:
 #   DB_HOST
@@ -106,11 +89,42 @@ mysql_db_create() {
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "USE $DB_NAME;" 
 }
 
-db_tables_create() {
-	echo "Creating tables for database $DB_NAME..."
+#######################################
+# Creating tables for $DB_NAME database
+# Globals:
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
+#   SQL_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_tables_create() {
+	echo "Creating tables for database [$DB_NAME]..."
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "USE $DB_NAME;" 
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_NAME < $SQL_DIR/geonames_db_struct.sql
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_NAME < $SQL_DIR/geonames_mysql_db_tables_create.sql
 }
+
+#######################################
+# Dropping $DB_NAME database
+# Globals:
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_drop() {
+	echo "Dropping [$DB_NAME] database"
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
+}
+
 
 db_import_dumps() {
 	echo "Importing geonames dumps into database $DB_NAME"
@@ -119,7 +133,8 @@ db_import_dumps() {
 
 #download_geonames_data
 #mysql_db_drop
-mysql_db_create
+#mysql_db_create
+mysql_db_tables_create
 #db_create
 #db_tables_create
 #db_import_dumps
