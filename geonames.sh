@@ -70,6 +70,21 @@ download_geonames_data() {
 	done
 }
 
+#######################################
+# Dropping $DB_NAME database
+# Globals:
+#   DMP_DIR
+#   ZIP_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_drop() {
+	echo "Dropping $DB_NAME database"
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
+}
+
 db_create() {
 	echo "Creating database $DB_NAME..."
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
@@ -88,7 +103,8 @@ db_import_dumps() {
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD --local-infile=1 $DB_NAME < $SQL_DIR/geonames_import_data.sql
 }
 
-download_geonames_data
+#download_geonames_data
+mysql_db_drop
 #db_create
 #db_tables_create
 #db_import_dumps
