@@ -125,6 +125,23 @@ mysql_db_drop() {
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
 }
 
+#######################################
+# Truncating $DB_NAME database
+# Globals:
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
+#   SQL_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_truncate() {
+	echo "Truncating [$DB_NAME] database"
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_NAME < $SQL_DIR/geonames_mysql_db_truncate.sql
+}
 
 db_import_dumps() {
 	echo "Importing geonames dumps into database $DB_NAME"
@@ -134,7 +151,8 @@ db_import_dumps() {
 #download_geonames_data
 #mysql_db_drop
 #mysql_db_create
-mysql_db_tables_create
+#mysql_db_tables_create
+mysql_db_truncate
 #db_create
 #db_tables_create
 #db_import_dumps
