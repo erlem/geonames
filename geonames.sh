@@ -34,13 +34,13 @@ download_geonames_data() {
 
 	# Create the directory DMP_DIR if not exists 
 	if [ ! -d "$DMP_DIR" ];then 
-		echo "Creating directory '$DMP_DIR'"
+		echo "Creating directory [$DMP_DIR]"
 		mkdir $DMP_DIR 
 	fi 
 
 	# Create the directory ZIP_DIR if not exists 
 	if [ ! -d "$ZIP_DIR" ];then 
-		echo "Creating directory '$ZIP_DIR'"
+		echo "Creating directory [$ZIP_DIR]"
 		mkdir -p $ZIP_DIR 
 	fi 
 
@@ -52,9 +52,9 @@ download_geonames_data() {
 		echo "Downloading GeoNames data http://download.geonames.org/export/dump/$dump..."
 		wget -c -P $DMP_DIR http://download.geonames.org/export/dump/$dump
 		if [ ${dump: -4} == ".zip" ]; then
-			echo "Unzip $dump in $DMP_DIR"
+			echo "Unzip [$dump] in [$DMP_DIR]"
 			unzip -j "$DMP_DIR/$dump" -d $DMP_DIR
-			echo "Deleting $DMP_DIR"
+			echo "Deleting [$dump] in [$DMP_DIR]"
 			rm "$DMP_DIR/$dump"
 		fi
 	done
@@ -63,9 +63,9 @@ download_geonames_data() {
 	for dump in $dump_postal_codes; do
 		echo "Downloading GeoNames data http://download.geonames.org/export/zip/$dump..."
 		wget -c -P $ZIP_DIR http://download.geonames.org/export/zip/$dump
-		echo "Unzip $dump dans $ZIP_DIR"
+		echo "Unzip [$dump] in [$ZIP_DIR]"
 		unzip -j "$ZIP_DIR/$dump" -d $ZIP_DIR
-		echo "Deleting $dump dans $ZIP_DIR"
+		echo "Deleting [$dump] in [$ZIP_DIR]"
 		rm "$ZIP_DIR/$dump"
 	done
 }
@@ -73,20 +73,34 @@ download_geonames_data() {
 #######################################
 # Dropping $DB_NAME database
 # Globals:
-#   DMP_DIR
-#   ZIP_DIR
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
 # Arguments:
 #   None
 # Returns:
 #   None
 #######################################
 mysql_db_drop() {
-	echo "Dropping $DB_NAME database"
+	echo "Dropping [$DB_NAME] database"
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
 }
 
-db_create() {
-	echo "Creating database $DB_NAME..."
+#######################################
+# Creating $DB_NAME database
+# Globals:
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_create() {
+	echo "Creating database [$DB_NAME]..."
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "DROP DATABASE IF EXISTS $DB_NAME;"
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "CREATE DATABASE $DB_NAME DEFAULT CHARACTER SET utf8;" 
 	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -Bse "USE $DB_NAME;" 
@@ -104,7 +118,8 @@ db_import_dumps() {
 }
 
 #download_geonames_data
-mysql_db_drop
+#mysql_db_drop
+mysql_db_create
 #db_create
 #db_tables_create
 #db_import_dumps
