@@ -109,6 +109,24 @@ mysql_db_tables_create() {
 }
 
 #######################################
+# Importing geonames dumps into database $DB_NAME
+# Globals:
+#   DB_HOST
+#   DB_PORT
+#   DB_USERNAME
+#   DB_PASSWORD
+#   SQL_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+mysql_db_import_dumps() {
+	echo "Importing GeoNames dumps into database [$DB_NAME]. Please wait a moment..."
+	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD --local-infile=1 $DB_NAME < $SQL_DIR/geonames_mysql_db_import_dumps.sql
+}
+
+#######################################
 # Dropping $DB_NAME database
 # Globals:
 #   DB_HOST
@@ -143,16 +161,12 @@ mysql_db_truncate() {
     mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_NAME < $SQL_DIR/geonames_mysql_db_truncate.sql
 }
 
-db_import_dumps() {
-	echo "Importing geonames dumps into database $DB_NAME"
-	mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD --local-infile=1 $DB_NAME < $SQL_DIR/geonames_import_data.sql
-}
-
 #download_geonames_data
 #mysql_db_drop
 #mysql_db_create
 #mysql_db_tables_create
-mysql_db_truncate
+#mysql_db_truncate
+mysql_db_import_dumps
 #db_create
 #db_tables_create
 #db_import_dumps
