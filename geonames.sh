@@ -71,6 +71,24 @@ download_geonames_data() {
 }
 
 #######################################
+# Deleting DMP_DIR and ZIP_DIR folders
+# Globals:
+#   DMP_DIR
+#   ZIP_DIR
+# Arguments:
+#   None
+# Returns:
+#   None
+#######################################
+download_geonames_data_delete() {
+	echo "Deleting [$DMP_DIR] folders" 
+	rm -R $DMP_DIR
+
+	echo "Deleting [$ZIP_DIR] folders" 
+	rm -R $ZIP_DIR	
+}
+
+#######################################
 # Creating $DB_NAME database
 # Globals:
 #   DB_HOST
@@ -161,16 +179,52 @@ mysql_db_truncate() {
     mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_NAME < $SQL_DIR/geonames_mysql_db_truncate.sql
 }
 
-#download_geonames_data
-#mysql_db_drop
-#mysql_db_create
-#mysql_db_tables_create
-#mysql_db_truncate
-mysql_db_import_dumps
-#db_create
-#db_tables_create
-#db_import_dumps
+# Deals with operation mode 2 (Database issues...)
+# Parses command line parameters.
+while getopts "a:u:p:h:r:n:" opt; 
+do
+    case $opt in
+        a) action=$OPTARG ;;
+        u) dbusername=$OPTARG ;;
+        p) dbpassword=$OPTARG ;;
+        h) dbhost=$OPTARG ;;
+        r) dbport=$OPTARG ;;
+        n) dbname=$OPTARG ;;
+    esac
+done
 
+case "$action" in
+    db-create)
+		mysql_db_create
+    ;;
+
+	tables-create)
+		mysql_db_tables_create
+    ;;
+
+ 	download-data)
+		download_geonames_data
+    ;;    
+
+ 	download-delete)
+		download_geonames_data_delete
+    ;;        
+
+	db-drop)
+		mysql_db_drop
+    ;;
+
+	db-truncate)
+		mysql_db_truncate
+    ;;    
+
+    all)
+		download_geonames_data
+		mysql_db_create
+		mysql_db_tables_create
+		mysql_db_import_dumps
+    ;;
+esac
 
 if [ $? == 0 ]; then 
 	echo "[OK]"
